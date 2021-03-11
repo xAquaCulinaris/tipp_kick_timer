@@ -18,30 +18,36 @@
 #define START_TIMER_BTN 6
 #define INCREMENT_TIME_BTN 11
 
+const int SHORT_PRESS = 2000;
 
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
-bool timer_running = false;
-
 int player1_score = 0;
 int player2_score = 0;
 
 
-//how long total game
+
+
+bool timer_running = false;
+//get value when start button pressed
+unsigned long start_time = 0;
 int total_time = 300;
 int time_left = 300;
 
 
+//values for output on screen
 int minutes = 0;
 int seconds = 0;
 
 
-//get value when start button pressed first time
-unsigned long start_time = 0;
 
-
+//detect long button press
+int lastState = HIGH;
+int currentState;
+unsigned long pressedTime = 0;
+unsigned long releasedTime = 0;
 
 
 
@@ -73,8 +79,6 @@ void setup() {
 
   convert_time();
 }
-
-
 
 
 
@@ -133,7 +137,7 @@ void convert_time() {
 bool countdown() {
   int time_played = (millis() - start_time) / 1000;
   time_left = total_time - time_played;
-  
+
   if (time_left <= 0) {
     time_left = 0;
   }
@@ -142,7 +146,15 @@ bool countdown() {
 }
 
 
-
+void reset() {
+  player1_score = 0;
+  player2_score = 0;
+  timer_running = false;
+  start_time = 0;
+  total_time = 300;
+  time_left = 300;
+  convert_time();
+}
 
 
 void loop() {
@@ -184,17 +196,43 @@ void loop() {
     delay(140);
   }
 
-  //start / stop timer
-  if (digitalRead(START_TIMER_BTN) == LOW) {
-    if (timer_running) {
-      total_time = time_left;
-    }
-    start_time = millis();
 
-    timer_running = !timer_running;
-    delay(200);
+  currentState = digitalRead(START_TIMER_BTN);
+
+  //start / stop timer
+  if (lastState == HIGH && currentState == LOW)
+    pressedTime = millis();
+  else if (lastState == LOW && currentState == HIGH) {
+    releasedTime = millis();
+
+    long pressDuration = releasedTime - pressedTime;
+
+    if (pressDuration < SHORT_PRESS) {
+      Serial.println("SHORT button press");
+      if (timer_running) {
+        total_time = time_left;
+      }
+      start_time = millis();
+
+      timer_running = !timer_running;
+    }
+    else {
+      Serial.println("LONG button press");
+      reset();
+    }
   }
-  
+
+
+
+
+
+
+
+
+
+
+
+  lastState = currentState;
 
   // remove 30 seconds from timer
   if (digitalRead(DECREMENT_TIME_BTN) == LOW) {

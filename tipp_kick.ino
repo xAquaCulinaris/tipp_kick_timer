@@ -29,7 +29,7 @@ int player1_score = 0;
 int player2_score = 0;
 
 
-//how long total game 
+//how long total game
 int total_time = 300;
 int time_left = 300;
 
@@ -39,7 +39,7 @@ int seconds = 0;
 
 
 //get value when start button pressed first time
-int start_time = 0;
+unsigned long start_time = 0;
 
 
 
@@ -70,8 +70,8 @@ void setup() {
   }
   display.setTextColor(WHITE);
 
-  
- convert_time();
+
+  convert_time();
 }
 
 
@@ -90,19 +90,23 @@ void update_display() {
     display.setCursor(20, 0);
   } else {
     display.setTextSize(4);
-    display.setCursor(0, 0);
+    display.setCursor(5, 5);
   }
-  
-  
+
+  if (player1_score < 10 && player2_score >= 10) {
+    display.print("0");
+  }
   display.print(player1_score);
   display.print(":");
+  if (player2_score < 10 && player1_score >= 10) {
+    display.print("0");
+  }
   display.print(player2_score);
 
 
   //time
   display.setTextSize(2);
   display.setCursor(33, 50);
-  
   //minutes
   if (minutes < 10) display.print("0");
   display.print(minutes);
@@ -126,12 +130,12 @@ void convert_time() {
 
 
 //counts the timer down
-bool countdown(int left_time) {
+bool countdown() {
   int time_played = (millis() - start_time) / 1000;
-  time_left = left_time - time_played;
-
+  time_left = total_time - time_played;
+  
   if (time_left <= 0) {
-    time_left = 0; 
+    time_left = 0;
   }
 
   convert_time();
@@ -144,11 +148,11 @@ bool countdown(int left_time) {
 void loop() {
   //start timer
   if (timer_running) {
-    countdown(total_time);
+    countdown();
   }
- 
+
   //decrement player1
-  if(digitalRead(DECREMENT_PLAYER1_BTN) == LOW) {
+  if (digitalRead(DECREMENT_PLAYER1_BTN) == LOW) {
     if (player1_score > 0) {
       player1_score -= 1;
       update_display();
@@ -157,14 +161,14 @@ void loop() {
   }
 
   //increment player1
-  if(digitalRead(INCREMENT_PLAYER1_BTN) == LOW) {
+  if (digitalRead(INCREMENT_PLAYER1_BTN) == LOW) {
     player1_score += 1;
     update_display();
     delay(140);
   }
 
   //decrement player2
-  if(digitalRead(DECREMENT_PLAYER2_BTN) == LOW) {
+  if (digitalRead(DECREMENT_PLAYER2_BTN) == LOW) {
     if (player2_score > 0) {
       player2_score -= 1;
       update_display();
@@ -174,24 +178,26 @@ void loop() {
 
 
   //increment player2
-  if(digitalRead(INCREMENT_PLAYER2_BTN) == LOW) {
+  if (digitalRead(INCREMENT_PLAYER2_BTN) == LOW) {
     player2_score += 1;
     update_display();
     delay(140);
   }
-  
-  if(digitalRead(START_TIMER_BTN) == LOW) {
+
+  //start / stop timer
+  if (digitalRead(START_TIMER_BTN) == LOW) {
     if (timer_running) {
       total_time = time_left;
     }
     start_time = millis();
-    
+
     timer_running = !timer_running;
-    delay(140);
+    delay(200);
   }
+  
 
-
-  if(digitalRead(DECREMENT_TIME_BTN) == LOW) {
+  // remove 30 seconds from timer
+  if (digitalRead(DECREMENT_TIME_BTN) == LOW) {
     total_time -= 30;
     time_left -= 30;
     convert_time();
@@ -199,7 +205,8 @@ void loop() {
   }
 
 
-   if(digitalRead(INCREMENT_TIME_BTN) == LOW) {
+  //add 30 seconds to timer
+  if (digitalRead(INCREMENT_TIME_BTN) == LOW) {
     total_time += 30;
     time_left += 30;
     convert_time();

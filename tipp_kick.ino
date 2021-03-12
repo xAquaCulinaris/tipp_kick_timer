@@ -31,7 +31,7 @@ int player2_score = 0;
 
 
 bool timer_running = false;
-//get value when start button pressed
+//time when start button pressed
 unsigned long start_time = 0;
 int total_time = 300;
 int time_left = 300;
@@ -68,6 +68,7 @@ void setup() {
   pinMode(INCREMENT_TIME_BTN, INPUT_PULLUP);
 
 
+  //setup display with address 0x3C
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
     for (;;); // Don't proceed, loop forever
@@ -76,13 +77,13 @@ void setup() {
   }
   display.setTextColor(WHITE);
 
-
+  //display inital values
   convert_time();
 }
 
 
 
-
+//display on screen
 void update_display() {
   //clear
   display.clearDisplay();
@@ -207,6 +208,7 @@ void loop() {
 
     long pressDuration = releasedTime - pressedTime;
 
+    //SHORT button press
     if (pressDuration < SHORT_PRESS) {
       Serial.println("SHORT button press");
       if (timer_running) {
@@ -216,28 +218,26 @@ void loop() {
 
       timer_running = !timer_running;
     }
+    //LONG button press
     else {
       Serial.println("LONG button press");
       reset();
     }
   }
 
-
-
-
-
-
-
-
-
-
-
   lastState = currentState;
+
+
 
   // remove 30 seconds from timer
   if (digitalRead(DECREMENT_TIME_BTN) == LOW) {
-    total_time -= 30;
-    time_left -= 30;
+    if (time_left > 30) {
+      total_time -= 30;
+      time_left -= 30;
+    } else {
+      total_time = 0;
+      time_left = 0;
+    }
     convert_time();
     delay(140);
   }

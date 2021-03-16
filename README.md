@@ -1,5 +1,5 @@
 # Tipp-Kick Timer
-Tipp-Kick is a device to keep track of the time and goals in a tipp-kick game
+Tipp-Kick timer is a device to keep track of the time and goals in a tipp-kick game
 
 <img src="https://github.com/xAquaCulinaris/tipp_kick_timer/blob/master/tipp_kick/images/tipp_kick_timer_front.jpg" alt="tipp_kick_timer_front" width="250"/>
 <img src="https://github.com/xAquaCulinaris/tipp_kick_timer/blob/master/tipp_kick/images/tipp_kick_timer_back.jpg" alt="tipp_kick_timer_back" width="250"/>
@@ -22,4 +22,6 @@ In addition, the goals of player 1 and player 2 can be set.
 
 ## Casing 
 If you have access to a 3D Printer you can use the casing which I designed.
+https://www.thingiverse.com/thing:4796185
+
 If you dont have access to a Printer you can create your own casing out of cardboard or wood.
